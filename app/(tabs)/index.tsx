@@ -1,98 +1,156 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import {
+  FlatList,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import CategoryList from "../../components/category/CategoryList";
+import FoodCard from "../../components/food/FoodCard";
+import HomeHeader from "../../components/home/HomeHeader";
+import SearchBar from "../../components/search/SearchBar";
+import AppText from "../../components/ui/AppText";
+import { colors } from "../../constants/colors";
+import { spacing } from "../../constants/spacing";
+import { foodData } from "../../data/foodData";
+import { getFoods } from "../../services/foodService";
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const {
+    data: foods = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["foods"],
+    queryFn: getFoods,
+  });
+
+  const router = useRouter();
+  const foodDataWithImages = foods.map((food) => {
+    const localFood = foodData.find(
+      (item) => String(item.id) === String(food.id),
+    );
+
+    return {
+      ...food,
+      image: localFood?.image,
+    };
+  });
+
+  const filteredFoodData = foodDataWithImages.filter((food) => {
+    const matchesSearch = food.name
+      .toLowerCase()
+      .includes(searchQuery.trim().toLowerCase());
+
+    const matchesCategory =
+      selectedCategory === null || food.category === selectedCategory;
+
+    return matchesSearch && matchesCategory;
+  });
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.content}
+      >
+        <HomeHeader />
+
+        <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
+
+        <CategoryList
+          selectedCategory={selectedCategory}
+          onCategoryPress={setSelectedCategory}
+        />
+
+        <View style={styles.foodSection}>
+          <AppText variant="title">Popular Foods</AppText>
+          {isLoading && <AppText variant="caption">Loading foods...</AppText>}
+
+          {isError && (
+            <View>
+              <AppText variant="caption">Could not load foods.</AppText>
+
+              <Pressable onPress={() => refetch()}>
+                <AppText variant="button">Try Again</AppText>
+              </Pressable>
+            </View>
+          )}
+          {!isLoading && !isError && (
+            <FlatList
+              data={filteredFoodData}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item) => String(item.id)}
+              contentContainerStyle={styles.foodList}
+              renderItem={({ item }) => (
+                <FoodCard
+                  name={item.name}
+                  description={item.description}
+                  price={Number(item.price)}
+                  image={item.image}
+                  onPress={() => router.push(`/food/${item.id}`)}
+                />
+              )}
+            />
+          )}
+
+          {!isLoading && !isError && filteredFoodData.length === 0 && (
+            <View style={styles.emptyState}>
+              <AppText variant="title">No food found</AppText>
+
+              <AppText variant="caption">
+                Try searching for something else.
+              </AppText>
+            </View>
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+    padding: spacing.lg,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+
+  title: {
+    fontSize: 32,
+    color: colors.primary,
+    marginBottom: spacing.lg,
+    fontWeight: "700",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+
+  foodSection: {
+    width: "100%",
+    marginTop: spacing.xl,
+  },
+
+  foodList: {
+    gap: spacing.md,
+    paddingTop: spacing.md,
+    paddingRight: spacing.lg,
+  },
+
+  content: {
+    paddingBottom: spacing.xxxl,
+  },
+
+  emptyState: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: spacing.xxxl,
   },
 });

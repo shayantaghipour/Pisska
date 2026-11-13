@@ -41,3 +41,30 @@ app-example
 # generated native folders
 /ios
 /android
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Python / Django
+__pycache__/
+*.py[cod]
+*.sqlite3
+.venv/
+venv/
+env/
+
+# Django generated files
+staticfiles/
+
+# IDE
+.idea/
+
+# Postman local settings
+.postman/
+
+# Local AI instructions
+.claude/
+CLAUDE.md
+AGENTS.md

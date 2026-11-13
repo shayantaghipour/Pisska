@@ -1,24 +1,42 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "expo-router/react-navigation";
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { useFonts } from "expo-font";
+import "react-native-reanimated";
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { AuthProvider} from "@/contexts/AuthContext";
+import QueryProvider from "@/lib/QueryProvider";
+import { queryClient } from "@/lib/queryClient";
+
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
+  const [fontsLoaded] = useFonts({
+    PlusJakartaSansRegular: require("../assets/fonts/PlusJakartaSans-Regular.ttf"),
+    PlusJakartaSansMedium: require("../assets/fonts/PlusJakartaSans-Medium.ttf"),
+    PlusJakartaSansSemiBold: require("../assets/fonts/PlusJakartaSans-SemiBold.ttf"),
+    PlusJakartaSansBold: require("../assets/fonts/PlusJakartaSans-Bold.ttf"),
+  });
+
+  if (!fontsLoaded) return null;
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
+  <QueryProvider>
+    <ThemeProvider
+      value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+    >
+      <AuthProvider>
+        <Stack screenOptions={{ headerShown: false }} />
+        <StatusBar style="dark" />
+      </AuthProvider>
     </ThemeProvider>
-  );
+  </QueryProvider>
+);
 }

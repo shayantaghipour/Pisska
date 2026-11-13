@@ -1,50 +1,151 @@
-# Welcome to your Expo app 👋
+# Pisska 🍽️
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A modern restaurant ordering application built with **React Native, Expo, TypeScript, and Django REST Framework**.
 
-## Get started
+Pisska is a portfolio project designed to demonstrate mobile application development, API integration, authentication, and backend development using modern technologies.
 
-1. Install dependencies
+## ✨ Features
 
-   ```bash
-   npm install
-   ```
+- Browse food items and restaurant menus.
+- Explore food categories.
+- Search for food items.
+- View food and restaurant details.
+- Manage shopping cart items.
+- User authentication and account management.
+- Place and manage food orders.
+- Backend API integration.
+- Persistent cart and order state management.
 
-2. Start the app
+## 🛠️ Tech Stack
 
-   ```bash
-   npx expo start
-   ```
+### Frontend
 
-In the output, you'll find options to open the app in a
+- React Native
+- Expo
+- TypeScript
+- Expo Router
+- Zustand
+- TanStack Query
+- Lucide React Native
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Backend
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- Python
+- Django
+- Django REST Framework
+- Simple JWT
+- SQLite
 
-## Get a fresh project
+## 📁 Project Structure
 
-When you're ready, run:
-
-```bash
-npm run reset-project
+```text
+Pisska/
+├── app/                  # Application screens and navigation
+├── assets/               # Fonts, images, and sounds
+├── components/           # Reusable UI components
+├── constants/            # Colors, spacing, and typography
+├── contexts/             # React contexts
+├── data/                 # Local application data
+├── lib/                  # Shared libraries and providers
+├── services/             # API and application services
+├── store/                # Zustand state management
+├── backend/              # Django backend
+│   ├── config/
+│   ├── foods/
+│   ├── users/
+│   ├── accounts/
+│   └── manage.py
+└── postman/              # API collections and documentation
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 🚀 Getting Started
 
-## Learn more
+### Prerequisites
 
-To learn more about developing your project with Expo, look at the following resources:
+- Node.js
+- npm
+- Python 3.12+
+- Git
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### 1. Clone the repository
 
-## Join the community
+```bash
+git clone https://github.com/shayantaghipour/Pisska.git
+cd Pisska
+```
 
-Join our community of developers creating universal apps.
+### 2. Install frontend dependencies
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+npm install
+```
+
+### 3. Configure the backend
+
+Navigate to the backend directory:
+
+```bash
+cd backend
+```
+
+Create and activate a Python virtual environment, then install the dependencies:
+
+```bash
+python -m venv .venv
+```
+
+Activate it on Windows:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+Install requirements:
+
+```bash
+pip install -r requirements.txt
+```
+
+Create a `.env` file inside the `backend` directory:
+
+```env
+DJANGO_SECRET_KEY=your-secret-key
+DJANGO_DEBUG=True
+DJANGO_ALLOWED_HOSTS=127.0.0.1,localhost
+```
+
+Run database migrations:
+
+```bash
+python manage.py migrate
+```
+
+Start the Django development server:
+
+```bash
+python manage.py runserver
+```
+
+### 4. Start the frontend
+
+Open another terminal in the project root:
+
+```bash
+npx expo start
+```
+
+Follow the Expo CLI instructions to run the application on a supported device or emulator.
+
+## 📸 Screenshots
+
+Screenshots of the application will be added here.
+
+## 📌 Project Status
+
+**Version:** 1.0.0
+
+Pisska is a portfolio and learning project. Its main goal is to demonstrate frontend and backend development skills through a restaurant ordering application.
+
+## 📄 License
+
+This project is available for educational and portfolio purposes.
